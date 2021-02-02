@@ -32,7 +32,18 @@ class SensorSettings(QtWidgets.QWidget):
         self.layout.addWidget(sensitivity_label)
         self.layout.addWidget(self.sensitivity_selector)
 
+        key_code_label = QtWidgets.QLabel("Keyboard Scan Code:")
+        self.key_code_selector = QtWidgets.QSpinBox()
+        self.key_code_selector.setRange(0, 255)
+        self.key_code_selector.valueChanged.connect(self.update_key_code)
+
+        self.layout.addWidget(key_code_label)
+        self.layout.addWidget(self.key_code_selector)
+
         self.setLayout(self.layout)
 
     def update_sensitivity(self):
         self.sensitivity = self.sensitivity_selector.value()
+
+    def update_key_code(self):
+        self.key_code = self.key_code_selector.value()

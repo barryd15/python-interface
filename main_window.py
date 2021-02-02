@@ -196,10 +196,12 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         sensitivities = []
+        key_codes = []
         for interface in self.panel_interfaces:
             sensitivities.append(interface.sensor_viewer.settings.sensitivity)
+            key_codes.append(interface.sensor_viewer.settings.key_code)
 
-        if not self.platform.launch(self.available_pads.currentData(), sensitivities):
+        if not self.platform.launch(self.available_pads.currentData(), sensitivities, key_codes):
             QtWidgets.QMessageBox.warning(self, "Warning", "Cannot open connection to selected dance pad.")
             self.enumerate()
         elif self.platform.is_running:
