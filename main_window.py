@@ -150,7 +150,11 @@ class MainWindow(QtWidgets.QMainWindow):
         i = 0
         for interface in self.panel_interfaces:
             interface.sensor_viewer.settings.sensitivity_selector.setValue(self.profile['sensitivities'][i])
-            interface.sensor_viewer.settings.key_code_selector.setValue(self.profile['key_codes'][i])
+            try:
+                interface.sensor_viewer.settings.key_code_selector.setValue(self.profile['key_codes'][i])
+            except KeyError as e:
+                # probably an old file without key_codes implemented
+                pass
             interface.led_viewer.settings.set_led_path(self.profile['light_paths'][i])
             i += 1
         self.available_pads.setCurrentIndex(self.available_pads.findData(self.profile['selected_profile']))
