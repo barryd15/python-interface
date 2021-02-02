@@ -9,7 +9,7 @@ class PlatformInterface():
         devices = [d for d in hid.enumerate(self.USB_VID, self.USB_PID)]
         return devices
 
-    def launch(self, serial, sensitivities):
+    def launch(self, serial, sensitivities, key_codes):
         if serial == None:
             serial = '0'
         self.h = hid.device()
@@ -19,7 +19,7 @@ class PlatformInterface():
             return 0
         if self.h.get_product_string() == 'RE:Flex Dance Pad':
             self.is_running = True
-            self.setup(sensitivities)
+            self.setup(sensitivities, key_codes)
             return 1
         else:
             self.is_running = False
@@ -34,13 +34,13 @@ class PlatformInterface():
             LedProcessor.from_file(self.led_files[3], 270)
         ]
 
-    def setup(self, sensitivities):
+    def setup(self, sensitivities, key_codes):
         self.sample_counter = 0
 
         data = self.h.read(64)
         self.organize_data(data)
         self.sum_panel_data(self.panel_data)
-        self.keyboard_input = KeyboardInput(self.panel_values, sensitivities)
+        self.keyboard_input = KeyboardInput(self.panel_values, sensitivities, key_codes)
 
         directions = ( 'left', 'down', 'up', 'right' )
 

@@ -150,6 +150,11 @@ class MainWindow(QtWidgets.QMainWindow):
         i = 0
         for interface in self.panel_interfaces:
             interface.sensor_viewer.settings.sensitivity_selector.setValue(self.profile['sensitivities'][i])
+            try:
+                interface.sensor_viewer.settings.key_code_selector.setValue(self.profile['key_codes'][i])
+            except KeyError as e:
+                # probably an old file without key_codes implemented
+                pass
             interface.led_viewer.settings.set_led_path(self.profile['light_paths'][i])
             i += 1
         self.available_pads.setCurrentIndex(self.available_pads.findData(self.profile['selected_profile']))
@@ -177,9 +182,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.profile['selected_profile'] = self.available_pads.currentData()
                 self.profile['update_graphs'] = self.show_graph.isChecked() 
                 self.profile['sensitivities'] = []
+                self.profile['key_codes'] = []
                 self.profile['light_paths'] = []
                 for interface in self.panel_interfaces:
                     self.profile['sensitivities'].append(interface.sensor_viewer.settings.sensitivity)
+                    self.profile['key_codes'].append(interface.sensor_viewer.settings.key_code)
                     self.profile['light_paths'].append(interface.led_viewer.settings.file_path)
                 json.dump(self.profile, f, indent=4)
                 title_string = "RE:Flex Configuration - " + str(file_name)
@@ -196,10 +203,12 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         sensitivities = []
+        key_codes = []
         for interface in self.panel_interfaces:
             sensitivities.append(interface.sensor_viewer.settings.sensitivity)
+            key_codes.append(interface.sensor_viewer.settings.key_code)
 
-        if not self.platform.launch(self.available_pads.currentData(), sensitivities):
+        if not self.platform.launch(self.available_pads.currentData(), sensitivities, key_codes):
             QtWidgets.QMessageBox.warning(self, "Warning", "Cannot open connection to selected dance pad.")
             self.enumerate()
         elif self.platform.is_running:
