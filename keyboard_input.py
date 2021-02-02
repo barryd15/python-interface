@@ -37,6 +37,7 @@ class KeyboardInput():
         self.thresholds = [sensitivities[0], sensitivities[1], sensitivities[2], sensitivities[3]]
         self.hysteresis = [self.thresholds[0]/2, self.thresholds[1]/2, self.thresholds[2]/2, self.thresholds[3]/2]
         self.is_pressed = [ 0,  0,  0,  0]
+        self.just_pressed = [ 0,  0,  0,  0]
 
     def set_baselines(self, data):
         self.baselines = []
@@ -61,14 +62,13 @@ class KeyboardInput():
         ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
 
     def poll_keys(self, data):
-        index = 0
-        for panel_value in data:
+        for index, panel_value in enumerate(data):
             if not self.is_pressed[index]:
                 if panel_value > (self.baselines[index] + self.thresholds[index]):
                     self.PressKey(self.key_values[index])
                     self.is_pressed[index] = 1 
+                    self.just_pressed[index] = 1
             else:
                 if panel_value < (self.baselines[index] + self.thresholds[index] - self.hysteresis[index]):
                     self.ReleaseKey(self.key_values[index])
                     self.is_pressed[index] = 0
-            index += 1
